@@ -1,0 +1,13 @@
+It is because the input and output of the LSTMcell don't have the same type in tf.while_loop. The problem can be solved by a slight change in meta.py.
+line 305
+state.append(_nested_variable( [net.initial_state_for_inputs(x[j], dtype=tf.float32) for j in subset], name="state", trainable=False))
+to
+state.append([net.initial_state_for_inputs(x[j], dtype=tf.float32) for j in subset])
+
+line 368
+variables = (nest.flatten(_nested_variable(state)) + x + constants)
+
+line 377
+update = (nest.flatten(_nested_assign(x, x_final)) + nest.flatten(_nested_assign(_nested_variable(state), s_final)))
+
+Hope this help!
